@@ -8,7 +8,7 @@ pipeline {
     parameters {
         string(
             name: 'TARGET_URL',
-            defaultValue: 'http://localhost:3000',
+            defaultValue: 'http://localhost:3001',
             description: 'Base URL of the website to test'
         )
     }
@@ -36,15 +36,15 @@ pipeline {
                 writeFile file: 'accessibility-tests.json', text: """[
   {
     "url": "${params.TARGET_URL}",
-    "goal": "Navigate through the main page using screen reader commands and verify all content is accessible"
+    "goal": "Find the newsletter signup form and verify the email input has a proper label"
   },
   {
-    "url": "${params.TARGET_URL}",
-    "goal": "Find and navigate to all headings on the page, verify proper heading hierarchy"
+    "url": "${params.TARGET_URL}/products",
+    "goal": "Check if the sort dropdown has a proper label for screen reader users"
   },
   {
-    "url": "${params.TARGET_URL}",
-    "goal": "Locate any forms on the page and verify all form inputs have proper labels"
+    "url": "${params.TARGET_URL}/contact",
+    "goal": "Navigate the contact form and verify all form inputs have associated labels"
   }
 ]"""
             }
