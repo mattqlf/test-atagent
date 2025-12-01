@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Your Electronics Destination</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .feature-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .newsletter {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        .newsletter h2 {
+            margin-bottom: 1rem;
+        }
+        .newsletter form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .newsletter input[type="email"] {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .promo-banner {
+            background: #e74c3c;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/" style="color: white; text-decoration: none; font-size: 1.5rem; font-weight: bold;">TechStore</a>
+            </div>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <!-- ACCESSIBILITY ISSUE: Button without accessible name -->
+            <button class="icon-btn" onclick="toggleCart()">
+                <span style="font-size: 1.5rem;">&#128722;</span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h1>Welcome to TechStore</h1>
+        <p>Your one-stop shop for the latest electronics and gadgets</p>
+        <a href="/products" class="btn btn-primary">Shop Now</a>
+    </div>
+
+    <main>
+        <!-- ACCESSIBILITY ISSUE: Skipped heading level (h2 missing, goes h1 -> h3) -->
+        <h3>Why Choose Us?</h3>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>Free Shipping</h3>
+                <p>Get free shipping on all orders over $50. Fast delivery to your doorstep.</p>
+                <a href="/products" class="btn btn-secondary">Learn More</a>
+            </div>
+
+            <div class="feature-card">
+                <h3>24/7 Support</h3>
+                <p>Our customer support team is available around the clock to help you.</p>
+                <!-- ACCESSIBILITY ISSUE: Link with non-descriptive text -->
+                <a href="/contact" class="btn btn-secondary">Click Here</a>
+            </div>
+
+            <div class="feature-card">
+                <h3>Easy Returns</h3>
+                <p>Not satisfied? Return any product within 30 days for a full refund.</p>
+                <a href="/contact" class="btn btn-secondary">Return Policy</a>
+            </div>
+        </div>
+
+        <!-- ACCESSIBILITY ISSUE: Using div instead of proper heading -->
+        <div style="font-size: 1.5rem; font-weight: bold; margin: 2rem 0 1rem;">Special Offers</div>
+
+        <div class="promo-banner">
+            <!-- ACCESSIBILITY ISSUE: Important info conveyed only through color -->
+            <p>FLASH SALE: Use code SAVE20 for 20% off!</p>
+        </div>
+
+        <section class="newsletter">
+            <h2>Subscribe to Our Newsletter</h2>
+            <p>Stay updated with the latest products and exclusive deals.</p>
+            <form>
+                <!-- ACCESSIBILITY ISSUE: Input without associated label -->
+                <input type="email" placeholder="Enter your email">
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+        </section>
+
+        <h2>Customer Reviews</h2>
+        <div class="features">
+            <div class="feature-card">
+                <p>"Amazing products and fast delivery! Highly recommend."</p>
+                <p><strong>- John D.</strong></p>
+                <!-- ACCESSIBILITY ISSUE: Images without alt text would go here -->
+            </div>
+            <div class="feature-card">
+                <p>"Best customer service I've ever experienced."</p>
+                <p><strong>- Sarah M.</strong></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TechStore. All rights reserved.</p>
+        <div class="social-links">
+            <!-- ACCESSIBILITY ISSUE: Links without accessible names -->
+            <a href="#">&#128240;</a>
+            <a href="#">&#128247;</a>
+            <a href="#">&#128250;</a>
+        </div>
+    </footer>
+
+    <script>
+        function toggleCart() {
+            alert('Cart functionality coming soon!');
+        }
+    </script>
+</body>
+</html>

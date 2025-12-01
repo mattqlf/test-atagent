@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - TechStore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        h1 {
+            margin-bottom: 1rem;
+        }
+        .contact-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .required {
+            color: #e74c3c;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .contact-card {
+            text-align: center;
+            padding: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .contact-card h3 {
+            margin: 1rem 0 0.5rem;
+        }
+        .error-text {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .faq-section {
+            margin: 2rem 0;
+        }
+        .faq-item {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        .faq-question {
+            padding: 1rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .faq-answer {
+            padding: 1rem;
+            display: none;
+        }
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/" style="color: white; text-decoration: none; font-size: 1.5rem; font-weight: bold;">TechStore</a>
+            </div>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Contact Us</h1>
+        <p>Have a question? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+
+        <div class="contact-info">
+            <div class="contact-card">
+                <div style="font-size: 2rem;">&#128222;</div>
+                <h3>Phone</h3>
+                <p>1-800-TECH-123</p>
+            </div>
+            <div class="contact-card">
+                <div style="font-size: 2rem;">&#9993;</div>
+                <h3>Email</h3>
+                <p>support@techstore.com</p>
+            </div>
+            <div class="contact-card">
+                <div style="font-size: 2rem;">&#128205;</div>
+                <h3>Address</h3>
+                <p>123 Tech Street, San Francisco, CA</p>
+            </div>
+        </div>
+
+        <h2>Send us a Message</h2>
+
+        <form class="contact-form">
+            <div class="form-group">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <!-- ACCESSIBILITY ISSUE: Label not associated with input (missing for attribute) -->
+                <label>Email Address <span class="required">*</span></label>
+                <input type="email" name="email" placeholder="your@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <!-- ACCESSIBILITY ISSUE: No label at all -->
+                <input type="tel" name="phone" placeholder="Phone Number (optional)">
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject <span class="required">*</span></label>
+                <select id="subject" name="subject" required>
+                    <option value="">Select a topic...</option>
+                    <option value="order">Order Inquiry</option>
+                    <option value="product">Product Question</option>
+                    <option value="return">Returns & Refunds</option>
+                    <option value="technical">Technical Support</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <!-- ACCESSIBILITY ISSUE: for attribute doesn't match any id -->
+                <label for="msg">Your Message <span class="required">*</span></label>
+                <textarea name="message" placeholder="How can we help you?" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <!-- ACCESSIBILITY ISSUE: Checkbox without proper label association -->
+                <div class="checkbox-group">
+                    <input type="checkbox" name="newsletter">
+                    <span>Subscribe to our newsletter</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <!-- ACCESSIBILITY ISSUE: Using div instead of fieldset/legend for radio group -->
+                <div>Preferred contact method:</div>
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                    <label><input type="radio" name="contact-method" value="email"> Email</label>
+                    <label><input type="radio" name="contact-method" value="phone"> Phone</label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Send Message</button>
+                <button type="reset" class="btn btn-secondary">Clear Form</button>
+            </div>
+        </form>
+
+        <!-- ACCESSIBILITY ISSUE: h4 after h2 (skipping h3) -->
+        <h4>Frequently Asked Questions</h4>
+
+        <div class="faq-section">
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">What are your business hours?</div>
+                <div class="faq-answer">We're available Monday through Friday, 9 AM to 6 PM PST. Our online store is available 24/7.</div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">How long does shipping take?</div>
+                <div class="faq-answer">Standard shipping takes 5-7 business days. Express shipping is available for 2-3 day delivery.</div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-question">What is your return policy?</div>
+                <div class="faq-answer">We offer a 30-day return policy on all products. Items must be in original condition with all packaging.</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TechStore. All rights reserved.</p>
+    </footer>
+</body>
+</html>
