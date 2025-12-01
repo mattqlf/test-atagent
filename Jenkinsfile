@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS'  // Must match the name configured in Jenkins Global Tool Configuration
+    }
+
     parameters {
         string(
             name: 'TARGET_URL',
