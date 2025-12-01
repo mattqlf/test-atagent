@@ -1,0 +1,36 @@
+name: Accessibility Tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Install test website dependencies
+        run: npm install
+
+      - name: Start test server
+        run: |
+          npm start &
+          sleep 3
+
+      - name: Run Accessibility Tests
+        uses: ./.github/actions/accessibility-agent
+        with:
+          test-config: 'a11y-tests.json'
+          provider: 'openai'
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          dashboard-url: ${{ secrets.DASHBOARD_URL }}
+          dashboard-api-key: ${{ secrets.DASHBOARD_API_KEY }}
