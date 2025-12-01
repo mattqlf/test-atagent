@@ -30004,6 +30004,33 @@ async function startLiveRun(dashboardUrl, apiKey, tests) {
         return null;
     }
 }
+async function notifyTestComplete(dashboardUrl, apiKey, testRunId, testIndex, success, url, goal) {
+    try {
+        const endpoint = dashboardUrl.endsWith('/')
+            ? `${dashboardUrl}api/live/test-complete`
+            : `${dashboardUrl}/api/live/test-complete`;
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': apiKey
+            },
+            body: JSON.stringify({
+                testRunId,
+                testIndex,
+                success,
+                url,
+                goal
+            })
+        });
+        if (!response.ok) {
+            core.warning(`Failed to notify test complete: HTTP ${response.status}`);
+        }
+    }
+    catch (error) {
+        core.warning(`Error notifying test complete: ${error}`);
+    }
+}
 async function completeLiveRun(dashboardUrl, apiKey, testRunId, results, totalDuration) {
     try {
         const payload = {
@@ -30218,6 +30245,10 @@ async function run() {
             core.info('-------------------------------------------');
             const result = await runSingleTest(test, provider, apiKey, headless, agentPath, liveTestRunId, i, dashboardUrl || null, dashboardApiKey || null);
             results.push(result);
+            // Notify dashboard of test completion for real-time stats
+            if (liveTestRunId && dashboardUrl && dashboardApiKey) {
+                await notifyTestComplete(dashboardUrl, dashboardApiKey, liveTestRunId, i, result.success, test.url, test.goal);
+            }
             if (result.success) {
                 core.info(`PASSED: ${result.reason || 'Test completed successfully'}`);
             }
