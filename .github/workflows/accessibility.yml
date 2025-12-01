@@ -28,7 +28,7 @@ jobs:
 
       - name: Clone accessibility agent
         run: |
-          git clone --branch langgraph-agent --recurse-submodules https://${{ secrets.AT_AGENT_PAT }}@github.com/justanothernoob4648/at-agent.git ${{ github.workspace }}/../at-agent
+          git clone --branch langgraph-agent https://${{ secrets.AT_AGENT_PAT }}@github.com/justanothernoob4648/at-agent.git ${{ github.workspace }}/../at-agent
           cd ${{ github.workspace }}/../at-agent && npm ci
 
       - name: Run Accessibility Tests
