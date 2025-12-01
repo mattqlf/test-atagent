@@ -52,7 +52,7 @@ async function startLiveRun(
     const context = github.context;
 
     const payload = {
-      platform: 'github',
+      platform: 'github-actions',
       jobName: `${context.repo.owner}/${context.repo.repo}`,
       buildNumber: context.runNumber.toString(),
       buildUrl: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
