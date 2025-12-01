@@ -34,6 +34,9 @@ inputs:
   dashboard-api-key:
     description: 'Dashboard API key for authentication (required if dashboard-url is set)'
     required: false
+  agent-path:
+    description: 'Path to the at-agent installation directory'
+    required: true
 
 outputs:
   total-tests:

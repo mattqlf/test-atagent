@@ -26,6 +26,11 @@ jobs:
           npm start &
           sleep 3
 
+      - name: Clone accessibility agent
+        run: |
+          git clone --branch langgraph-agent https://github.com/mattqlf/at-agent.git ${{ github.workspace }}/../at-agent
+          cd ${{ github.workspace }}/../at-agent && npm ci
+
       - name: Run Accessibility Tests
         uses: ./.github/actions/accessibility-agent
         with:
@@ -34,3 +39,4 @@ jobs:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           dashboard-url: ${{ secrets.DASHBOARD_URL }}
           dashboard-api-key: ${{ secrets.DASHBOARD_API_KEY }}
+          agent-path: ${{ github.workspace }}/../at-agent

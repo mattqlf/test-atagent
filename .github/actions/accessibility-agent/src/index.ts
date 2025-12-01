@@ -268,6 +268,7 @@ async function run(): Promise<void> {
     const continueOnFailure = core.getInput('continue-on-failure') !== 'false';
     const dashboardUrl = core.getInput('dashboard-url');
     const dashboardApiKey = core.getInput('dashboard-api-key');
+    const agentPathInput = core.getInput('agent-path', { required: true });
 
     // Validate API key
     const apiKey = provider === 'openai' ? openaiApiKey : geminiApiKey;
@@ -311,10 +312,9 @@ async function run(): Promise<void> {
     core.info(`Headless: ${headless}`);
     core.info('');
 
-    // Determine agent path (assume it's the root of the repo with runAgentCli.ts)
-    // For actions running from this repo, use GITHUB_WORKSPACE
-    // For actions running from other repos using this action, they need to have the agent installed
-    const agentPath = process.env.GITHUB_WORKSPACE || process.cwd();
+    // Use the agent path from input
+    const agentPath = path.resolve(agentPathInput);
+    core.info(`Agent path: ${agentPath}`);
 
     // Start live tracking if dashboard is configured
     let liveTestRunId: string | null = null;
