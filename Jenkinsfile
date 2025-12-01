@@ -5,12 +5,8 @@ pipeline {
         nodejs 'NodeJS'  // Must match the name configured in Jenkins Global Tool Configuration
     }
 
-    parameters {
-        string(
-            name: 'TARGET_URL',
-            defaultValue: 'http://localhost:3001',
-            description: 'Base URL of the website to test'
-        )
+    environment {
+        TARGET_URL = 'http://localhost:3001'
     }
 
     stages {
@@ -24,26 +20,26 @@ pipeline {
             steps {
                 sh 'nohup npm start > server.log 2>&1 &'
                 sh 'sleep 3'
-                echo 'Test server started on http://localhost:3000'
+                echo 'Test server started on http://localhost:3001'
             }
         }
 
         stage('Setup Tests') {
             steps {
-                echo "Testing accessibility for: ${params.TARGET_URL}"
+                echo "Testing accessibility for: ${TARGET_URL}"
 
                 // Create the test configuration file
                 writeFile file: 'accessibility-tests.json', text: """[
   {
-    "url": "${params.TARGET_URL}",
+    "url": "${TARGET_URL}",
     "goal": "Find the newsletter signup form and verify the email input has a proper label"
   },
   {
-    "url": "${params.TARGET_URL}/products",
+    "url": "${TARGET_URL}/products",
     "goal": "Check if the sort dropdown has a proper label for screen reader users"
   },
   {
-    "url": "${params.TARGET_URL}/contact",
+    "url": "${TARGET_URL}/contact",
     "goal": "Navigate the contact form and verify all form inputs have associated labels"
   }
 ]"""
