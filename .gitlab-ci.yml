@@ -20,8 +20,8 @@ accessibility-tests:
     - sleep 5
     - npx wait-on http://localhost:3000 --timeout 60000
 
-    # Clone and set up at-agent
-    - git clone https://github.com/your-org/at-agent.git /at-agent
+    # Clone and set up at-agent (uses AT_AGENT_PAT variable for private repo access)
+    - git clone --branch langgraph-agent https://oauth2:${AT_AGENT_PAT}@github.com/justanothernoob4648/at-agent.git /at-agent
     - cd /at-agent && npm install
     - npx playwright install --with-deps chromium
 
