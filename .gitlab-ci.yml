@@ -16,7 +16,8 @@ accessibility-tests:
   before_script:
     # Install test-website dependencies and start the app
     - npm install
-    - npm start &
+    - PORT=3000 npm start &
+    - sleep 5
     - npx wait-on http://localhost:3000 --timeout 60000
 
     # Clone and set up at-agent
