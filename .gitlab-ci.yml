@@ -1,0 +1,68 @@
+# AT Agent Accessibility Tests for test-website
+# This pipeline runs accessibility tests using the discovered test suite
+
+stages:
+  - test
+
+accessibility-tests:
+  stage: test
+  image: node:20
+
+  variables:
+    PROVIDER: "openai"
+    HEADLESS: "true"
+    CONTINUE_ON_FAILURE: "true"
+
+  before_script:
+    # Install test-website dependencies and start the app
+    - npm install
+    - npm start &
+    - npx wait-on http://localhost:3000 --timeout 60000
+
+    # Clone and set up at-agent
+    - git clone https://github.com/your-org/at-agent.git /at-agent
+    - cd /at-agent && npm install
+    - npx playwright install --with-deps chromium
+
+  script:
+    - |
+      cd /at-agent
+      RESULTS="[]"
+      PASSED=0
+      FAILED=0
+
+      # Run each test from the config
+      for row in $(cat "${CI_PROJECT_DIR}/a11y-tests.json" | jq -c '.[]'); do
+        url=$(echo "$row" | jq -r '.url')
+        goal=$(echo "$row" | jq -r '.goal')
+
+        echo "Testing: $url"
+        echo "Goal: $goal"
+
+        result=$(npm run start:agent-cli -- "$url" "$goal" "$PROVIDER" --json 2>&1 | grep -o '{"url".*}' | head -1 || echo '{}')
+        success=$(echo "$result" | jq -r '.success // false')
+
+        RESULTS=$(echo "$RESULTS" | jq --argjson r "$result" '. + [$r]')
+
+        if [ "$success" = "true" ]; then
+          PASSED=$((PASSED + 1))
+          echo "PASSED"
+        else
+          FAILED=$((FAILED + 1))
+          echo "FAILED"
+        fi
+        echo ""
+      done
+
+      echo "$RESULTS" > "${CI_PROJECT_DIR}/accessibility-results.json"
+      echo "Summary: Passed=$PASSED, Failed=$FAILED"
+
+      if [ "$FAILED" -gt 0 ]; then
+        exit 1
+      fi
+
+  artifacts:
+    when: always
+    paths:
+      - accessibility-results.json
+    expire_in: 30 days
