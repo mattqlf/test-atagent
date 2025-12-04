@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        TARGET_URL = 'http://localhost:3001'
+        TARGET_URL = 'http://localhost:3000'
     }
 
     stages {
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 sh 'nohup npm start > server.log 2>&1 &'
                 sh 'sleep 3'
-                echo 'Test server started on http://localhost:3001'
+                echo 'Test server started on http://localhost:3000'
             }
         }
 

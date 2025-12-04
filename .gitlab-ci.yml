@@ -11,8 +11,9 @@ accessibility-tests:
     PROVIDER: "openai"
     HEADLESS: "true"
     CONTINUE_ON_FAILURE: "true"
-    # Dashboard integration (optional - set DASHBOARD_URL and DASHBOARD_API_KEY in GitLab CI/CD variables)
-    # DASHBOARD_URL: "https://at-agent-dashboard.fly.dev"
+    # Dashboard integration (optional - set these in GitLab CI/CD Settings > Variables)
+    # DASHBOARD_URL: "https://at-agent-dashboard.fly.dev"  # Or your own dashboard URL
+    # DASHBOARD_API_KEY: <set in CI/CD variables, masked>
 
   before_script:
     # Install jq for JSON parsing
@@ -46,6 +47,40 @@ accessibility-tests:
       echo "Running $NUM_TESTS accessibility tests..."
       echo ""
 
+      # Start live tracking if dashboard is configured
+      TEST_RUN_ID=""
+      if [ -n "$DASHBOARD_URL" ] && [ -n "$DASHBOARD_API_KEY" ]; then
+        echo "Starting live tracking on dashboard..."
+        TESTS_PAYLOAD=$(cat "$TEST_FILE")
+        LIVE_PAYLOAD=$(jq -n \
+          --arg platform "gitlab-ci" \
+          --arg jobName "${CI_PROJECT_PATH:-}/${CI_JOB_NAME:-}" \
+          --arg buildNumber "${CI_PIPELINE_ID:-}" \
+          --arg buildUrl "${CI_PIPELINE_URL:-}" \
+          --arg branch "${CI_COMMIT_REF_NAME:-}" \
+          --arg commit "${CI_COMMIT_SHA:-}" \
+          --argjson totalTests "$NUM_TESTS" \
+          --argjson tests "$TESTS_PAYLOAD" \
+          '{platform: $platform, jobName: $jobName, buildNumber: $buildNumber, buildUrl: $buildUrl, branch: $branch, commit: $commit, totalTests: $totalTests, tests: $tests}')
+
+        LIVE_RESPONSE=$(curl -s -X POST \
+          -H "Content-Type: application/json" \
+          -H "X-API-Key: $DASHBOARD_API_KEY" \
+          -d "$LIVE_PAYLOAD" \
+          "${DASHBOARD_URL%/}/api/live/start" || echo '{"error": "failed"}')
+
+        TEST_RUN_ID=$(echo "$LIVE_RESPONSE" | jq -r '.testRunId // empty')
+        if [ -n "$TEST_RUN_ID" ]; then
+          echo "Live tracking started: ${DASHBOARD_URL%/}/runs/$TEST_RUN_ID"
+          export TEST_RUN_ID
+          export DASHBOARD_URL
+          export DASHBOARD_API_KEY
+        else
+          echo "Warning: Could not start live tracking"
+        fi
+        echo ""
+      fi
+
       # Loop through each test by index
       for i in $(seq 0 $((NUM_TESTS - 1))); do
         TOTAL=$((TOTAL + 1))
@@ -62,7 +97,13 @@ accessibility-tests:
 
         # Run the test and capture output
         set +e
-        OUTPUT=$(npm run start:agent-cli -- "$url" "$goal" "$PROVIDER" --json 2>&1)
+        # Pass dashboard env vars and --live flag if configured
+        LIVE_ARGS=""
+        if [ -n "$DASHBOARD_URL" ] && [ -n "$DASHBOARD_API_KEY" ] && [ -n "$TEST_RUN_ID" ]; then
+          export TEST_INDEX="$i"
+          LIVE_ARGS="--live"
+        fi
+        OUTPUT=$(npm run start:agent-cli -- "$url" "$goal" "$PROVIDER" --json $LIVE_ARGS 2>&1)
         EXIT_CODE=$?
         set -e
 
@@ -133,6 +174,24 @@ if start >= 0:
 
       # Write results
       echo "$RESULTS" > "${CI_PROJECT_DIR}/accessibility-results.json"
+
+      # Complete live tracking
+      if [ -n "$TEST_RUN_ID" ] && [ -n "$DASHBOARD_URL" ] && [ -n "$DASHBOARD_API_KEY" ]; then
+        echo "Completing live tracking..."
+        COMPLETE_PAYLOAD=$(jq -n \
+          --arg testRunId "$TEST_RUN_ID" \
+          --argjson results "$RESULTS" \
+          --argjson totalDuration 0 \
+          '{testRunId: $testRunId, results: $results, totalDuration: $totalDuration}')
+
+        curl -s -X POST \
+          -H "Content-Type: application/json" \
+          -H "X-API-Key: $DASHBOARD_API_KEY" \
+          -d "$COMPLETE_PAYLOAD" \
+          "${DASHBOARD_URL%/}/api/live/complete" > /dev/null 2>&1 || true
+
+        echo "Results available at: ${DASHBOARD_URL%/}/runs/$TEST_RUN_ID"
+      fi
 
       echo "==========================================="
       echo "Summary"

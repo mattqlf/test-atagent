@@ -35,7 +35,8 @@ steps:
       agentPath: '$(Agent.BuildDirectory)/at-agent'
       headless: true
       continueOnFailure: true
-      # Dashboard integration (optional - add DASHBOARD_URL and DASHBOARD_API_KEY to variable group)
+      # Dashboard integration (optional - add to variable group or pipeline variables)
+      # Example: DASHBOARD_URL = "https://at-agent-dashboard.fly.dev"
       dashboardUrl: $(DASHBOARD_URL)
       dashboardApiKey: $(DASHBOARD_API_KEY)
     displayName: 'Run Accessibility Tests'
