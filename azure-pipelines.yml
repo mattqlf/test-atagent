@@ -1,0 +1,43 @@
+# Azure DevOps Pipeline for AT Agent Accessibility Tests
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: at-agent-secrets  # Variable group containing OPENAI_API_KEY and AT_AGENT_PAT
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm install
+      PORT=3000 npm start &
+      npx wait-on http://localhost:3000 --timeout 60000
+    displayName: 'Install and start test-website'
+
+  - script: |
+      git clone --branch langgraph-agent https://oauth2:$(AT_AGENT_PAT)@github.com/justanothernoob4648/at-agent.git $(Agent.BuildDirectory)/at-agent
+      cd $(Agent.BuildDirectory)/at-agent
+      npm install
+      npx playwright install --with-deps chromium
+    displayName: 'Install AT Agent'
+
+  - task: accessibility-agent@1
+    inputs:
+      testConfig: 'a11y-tests.json'
+      provider: 'openai'
+      openaiApiKey: $(OPENAI_API_KEY)
+      agentPath: '$(Agent.BuildDirectory)/at-agent'
+      headless: true
+      continueOnFailure: true
+    displayName: 'Run Accessibility Tests'
+
+  - publish: $(System.DefaultWorkingDirectory)/accessibility-results.json
+    artifact: accessibility-results
+    condition: always()
+    displayName: 'Publish test results'

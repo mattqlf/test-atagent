@@ -14,6 +14,9 @@ accessibility-tests:
     CONTINUE_ON_FAILURE: "true"
 
   before_script:
+    # Install jq for JSON parsing
+    - apt-get update && apt-get install -y jq
+
     # Install test-website dependencies and start the app
     - npm install
     - PORT=3000 npm start &
