@@ -6,7 +6,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: at-agent-secrets  # Variable group containing OPENAI_API_KEY and AT_AGENT_PAT
+  - group: api  # Variable group containing OPENAI_API_KEY and AT_AGENT_PAT
 
 steps:
   - task: NodeTool@0

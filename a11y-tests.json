@@ -1,4 +1,4 @@
 [
-  {"url": "http://localhost:3001", "goal": "Navigate to the contact page"},
-  {"url": "http://localhost:3001/login", "goal": "Complete the login form"}
+  {"url": "http://localhost:3000", "goal": "Navigate to the contact page"},
+  {"url": "http://localhost:3000/login", "goal": "Complete the login form"}
 ]
