@@ -27,7 +27,7 @@ steps:
       npx playwright install --with-deps chromium
     displayName: 'Install AT Agent'
 
-  - task: at-agent.at-agent.accessibility-agent@1
+  - task: AccessibilityAgent@1
     inputs:
       testConfig: 'a11y-tests.json'
       provider: 'openai'
