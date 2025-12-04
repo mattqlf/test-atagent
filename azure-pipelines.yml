@@ -27,7 +27,7 @@ steps:
       npx playwright install --with-deps chromium
     displayName: 'Install AT Agent'
 
-  - task: accessibility-agent@1
+  - task: at-agent.at-agent.accessibility-agent@1
     inputs:
       testConfig: 'a11y-tests.json'
       provider: 'openai'
@@ -35,6 +35,9 @@ steps:
       agentPath: '$(Agent.BuildDirectory)/at-agent'
       headless: true
       continueOnFailure: true
+      # Dashboard integration (optional - add DASHBOARD_URL and DASHBOARD_API_KEY to variable group)
+      dashboardUrl: $(DASHBOARD_URL)
+      dashboardApiKey: $(DASHBOARD_API_KEY)
     displayName: 'Run Accessibility Tests'
 
   - publish: $(System.DefaultWorkingDirectory)/accessibility-results.json
