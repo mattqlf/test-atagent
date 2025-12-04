@@ -1,5 +1,4 @@
 # AT Agent Accessibility Tests for test-website
-# This pipeline runs accessibility tests using the discovered test suite
 
 stages:
   - test
@@ -31,36 +30,78 @@ accessibility-tests:
   script:
     - |
       cd /at-agent
+
       RESULTS="[]"
       PASSED=0
       FAILED=0
+      TOTAL=0
 
-      # Run each test from the config
-      for row in $(cat "${CI_PROJECT_DIR}/a11y-tests.json" | jq -c '.[]'); do
-        url=$(echo "$row" | jq -r '.url')
-        goal=$(echo "$row" | jq -r '.goal')
+      # Read the test config file
+      TEST_FILE="${CI_PROJECT_DIR}/a11y-tests.json"
 
-        echo "Testing: $url"
+      # Get number of tests
+      NUM_TESTS=$(jq 'length' "$TEST_FILE")
+      echo "Running $NUM_TESTS accessibility tests..."
+      echo ""
+
+      # Loop through each test by index
+      for i in $(seq 0 $((NUM_TESTS - 1))); do
+        TOTAL=$((TOTAL + 1))
+
+        # Extract url and goal using jq
+        url=$(jq -r ".[$i].url" "$TEST_FILE")
+        goal=$(jq -r ".[$i].goal" "$TEST_FILE")
+
+        echo "==========================================="
+        echo "Test $TOTAL of $NUM_TESTS"
+        echo "URL: $url"
         echo "Goal: $goal"
+        echo "==========================================="
 
-        result=$(npm run start:agent-cli -- "$url" "$goal" "$PROVIDER" --json 2>&1 | grep -o '{"url".*}' | head -1 || echo '{}')
-        success=$(echo "$result" | jq -r '.success // false')
+        # Run the test and capture output
+        set +e
+        OUTPUT=$(npm run start:agent-cli -- "$url" "$goal" "$PROVIDER" --json 2>&1)
+        EXIT_CODE=$?
+        set -e
 
-        RESULTS=$(echo "$RESULTS" | jq --argjson r "$result" '. + [$r]')
+        # Extract JSON result from output (look for the JSON object)
+        JSON_RESULT=$(echo "$OUTPUT" | grep -o '{"url"[^}]*}' | head -1 || echo '{"success":false,"error":"Failed to parse output"}')
 
-        if [ "$success" = "true" ]; then
+        # Check if we got valid JSON, if not create a failure result
+        if ! echo "$JSON_RESULT" | jq . > /dev/null 2>&1; then
+          JSON_RESULT="{\"url\":\"$url\",\"goal\":\"$goal\",\"success\":false,\"error\":\"Invalid JSON output\"}"
+        fi
+
+        # Get success status
+        SUCCESS=$(echo "$JSON_RESULT" | jq -r '.success // false')
+
+        if [ "$SUCCESS" = "true" ]; then
           PASSED=$((PASSED + 1))
           echo "PASSED"
         else
           FAILED=$((FAILED + 1))
-          echo "FAILED"
+          ERROR=$(echo "$JSON_RESULT" | jq -r '.error // .reason // "Unknown error"')
+          echo "FAILED: $ERROR"
         fi
+
+        # Add to results array
+        RESULTS=$(echo "$RESULTS" | jq --argjson r "$JSON_RESULT" '. + [$r]')
+
         echo ""
       done
 
+      # Write results
       echo "$RESULTS" > "${CI_PROJECT_DIR}/accessibility-results.json"
-      echo "Summary: Passed=$PASSED, Failed=$FAILED"
 
+      echo "==========================================="
+      echo "Summary"
+      echo "==========================================="
+      echo "Total: $TOTAL"
+      echo "Passed: $PASSED"
+      echo "Failed: $FAILED"
+      echo "==========================================="
+
+      # Exit with failure if any tests failed
       if [ "$FAILED" -gt 0 ]; then
         exit 1
       fi
